@@ -90,17 +90,13 @@ safely_get_demographic_emd_data <- safely(get_demographic_emd_data, otherwise = 
 
 # 2. 크롤링 -------------
 
-sido_code <- demographics::gusigun_code %>%
-  filter(is.na(구시군명)) %>%
-  select(시도명, 시도코드)
+gusigun_code <- read_csv("data-raw/sido_gusigun_code.csv", col_types = cols(.default = 'c'))
 
-emd_demo_year_raw <- demographics::gusigun_code %>%
-  filter(!is.na(구시군명)) %>%
-  select(시도명, 구시군명, 구시군코드 = 시도코드) %>%
+emd_demo_year_raw <- gusigun_code %>%
+  distinct(.) %>%
   mutate(year = paste0(seq(2012, 2020, by =1), collapse = ",")) %>%
   separate(year, into = paste0("x", c(2012:2020)), sep = ",") %>%
   pivot_longer(cols = starts_with("x"), values_to = "연도") %>%
-  left_join(sido_code) %>%
   select(시도명, 시도코드, 구시군명, 구시군코드, 연도) %>%
   mutate(data = pmap(list(시도코드, 구시군코드, 연도), safely_get_demographic_emd_data))
 
@@ -111,15 +107,22 @@ emd_demo_year_raw %>%
 
 emd_demo_year_raw <-
   read_rds("data-raw/emd_demo_year_raw.rds")
+  # read_rds("data-raw/emd_demo_year_raw.rds")
 
 emd_demo_year_tbl <- emd_demo_year_raw %>%
-  mutate(result = map(data, "result")) %>%
-  filter(구시군코드 != 4167000000, 연도 != "2012") %>% # 2012년 여주시 오류 1건
+  ### NULL 값 처리
+  mutate(result = map(data, "result"),
+         error  = map(data, "error")) %>%
+  mutate(check = map_lgl(error, is.null)) %>%
+  filter(check) %>%
+  select(시도명, 시도코드, 구시군명, 구시군코드, 연도, result) %>%
   unnest(result) %>%
-  # mutate(check = case_when(구시군코드 == 행정기관코드 ~ TRUE,
-  #                          TRUE ~ FALSE)) %>%
-  # filter(!check) %>%
-  # select(-check) %>%
+  # filter(구시군코드 != 4167000000, 연도 != "2012") %>% # 2012년 여주시 오류 1건
+  # unnest(result) %>%
+  mutate(check = case_when(구시군코드 == 행정기관코드 ~ TRUE,
+                           TRUE ~ FALSE)) %>%
+  filter(!check) %>%
+  select(-check) %>%
   filter(! 구시군명 %in% c("수원시", "성남시", "안양시", "안산시", "고양시", "용인시"),
          ! 구시군명 %in% c("청주시"),
          ! 구시군명 %in% c("천안시"),
@@ -134,71 +137,44 @@ usethis::use_data(emd_demo_year_tbl, overwrite = TRUE)
 
 # 5. 정합성 검증 -------------
 
-test_that("행안부 인구통계 - 성별, 연령별, 구시군별", {
+test_that("행안부 인구통계 - 성별, 연령별, 읍면동별", {
 
-  emd_demo_year_tbl %>%
+  emd_demo_summary_tbl <- emd_demo_year_tbl %>%
     pivot_longer(cols = starts_with("x")) %>%
     mutate(value = parse_number(value),
            연도 = as.integer(연도)) %>%
-    filter(구시군명 == "종로구") %>%
-    filter(연도 >= 2016) %>%
-    group_by(연도) %>%
-    summarise(인구수 = sum(value))
+    filter(연도 >= 2013) %>%
+    group_by(시도명, 구시군명, 연도) %>%
+    summarise(인구수 = sum(value, na.rm = TRUE)) %>%
+    ungroup() %>%
+    mutate(연도 = as.character(연도))
 
-
-  gusigun_answer <- readxl::read_excel("data-raw/data/구시군_201612_202012_연령별인구현황_연간.xlsx") %>%
-    filter(행정기관 != "전국")
-
-  check_row <- sido_answer %>%
-    janitor::clean_names(ascii = FALSE) %>%
-    pivot_longer(cols = starts_with("x"), names_to = "연도", values_to = "정답_인구수",
+  emd_answer_tbl <- demographics::gusigun_demo_year_tbl %>%
+    pivot_longer(cols = starts_with("x"), names_to = "연령", values_to = "정답_인구수",
                  values_transform = list(정답_인구수 = parse_number)) %>%
-    mutate(연도 = parse_number(연도)) %>%
-    left_join(gusigun_demo_summary_tbl) %>%
+    group_by(시도명, 구시군명 = 행정기관, 연도) %>%
+    summarise(정답_인구수 = sum(정답_인구수)) %>%
+    ungroup() %>%
+    filter(연도 >= 2012)
+
+  check_row <- emd_answer_tbl %>%
+    left_join(emd_demo_summary_tbl) %>%
     mutate(차이 = 정답_인구수 - 인구수) %>%
-    filter(차이 != 0) %>%
+    filter(차이 !=0) %>%
     nrow()
 
   expect_that( check_row, equals(0))
 })
 
 
-# debug -------------------------------------------------------------------
-
-
-emd_demo_summary_tbl <- emd_demo_year_tbl %>%
-  pivot_longer(cols = starts_with("x")) %>%
-  mutate(value = parse_number(value),
-         연도 = as.integer(연도)) %>%
-  filter(연도 >= 2013) %>%
-  group_by(시도명, 구시군명, 연도) %>%
-  summarise(인구수 = sum(value, na.rm = TRUE)) %>%
-  ungroup() %>%
-  mutate(연도 = as.character(연도))
-
-emd_answer_tbl <- demographics::gusigun_demo_year_tbl %>%
-  pivot_longer(cols = starts_with("x"), names_to = "연령", values_to = "정답_인구수",
-               values_transform = list(정답_인구수 = parse_number)) %>%
-  group_by(시도명, 구시군명 = 행정기관, 연도) %>%
-  summarise(정답_인구수 = sum(정답_인구수)) %>%
-  ungroup() %>%
-  filter(연도 >= 2013)
-
-emd_answer_tbl %>%
-  left_join(emd_demo_summary_tbl) %>%
-  mutate(차이 = 정답_인구수 - 인구수) %>%
-  filter(is.na(차이)) %>%
-  View
-
-
-
-
-# 오류 ----------------------------------------------------------------------
-
 emd_demo_year_tbl %>%
   pivot_longer(cols = starts_with("x")) %>%
-  mutate(value = parse_number(value),
-         연도 = as.integer(연도)) %>%
-  filter(str_detect(구시군명, "고성")) %>%
-  group_by(구시군명, 연도) %>%
+  mutate(value = parse_number(value)) %>%
+  group_by(시도명, 연도) %>%
   summarise(sum(value, na.rm = TRUE))
+
+
+
+
+
+

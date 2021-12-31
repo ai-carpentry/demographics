@@ -145,3 +145,17 @@ test_that("행안부 인구통계 - 성별, 연령별, 구시군별", {
   expect_that( check_row, equals(0))
 })
 
+
+# 읍면동 마스터 코드 --------------------------------------------------------------
+
+gusigun_demo_year_raw %>%
+  select(-name) %>%
+  unnest(data) %>%
+  mutate(check = case_when(시도코드 == 행정기관코드 ~ TRUE,
+                               TRUE ~ FALSE)) %>%
+  filter(!check) %>%
+  rename(연도 = value) %>%
+  select(-check) %>%
+  select(시도코드, 시도명, 구시군코드 = 행정기관코드, 구시군명=행정기관) %>%
+  write_csv("data-raw/sido_gusigun_code.csv")
+
