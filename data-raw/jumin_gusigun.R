@@ -7,12 +7,15 @@ library(testthat)
 
 # 1. 크롤링 함수 -------------
 
+## "&sltArgTypes=5" <-- 연령단위기준 5세
+
 get_demographic_gusigun_data <- function(sido = "1100000000", demo_year = "2020") {
 
   cat("\n ------------------------- \n", sido, " : ", demo_year, "\n ------------------------- \n")
 
   url <- glue::glue("https://jumin.mois.go.kr/ageStatMonth.do?",
-                    "tableChart=T&sltOrgType=2",
+                    "tableChart=T",
+                    "&sltOrgType=2",
                     "&sltOrgLvl1={sido}",
                     "&sltOrgLvl2=A",
                     "&sltUndefType=",
@@ -22,9 +25,9 @@ get_demographic_gusigun_data <- function(sido = "1100000000", demo_year = "2020"
                     "&searchYearEnd={demo_year}",
                     "&searchMonthEnd=12",
                     "&gender=gender",
-                    "&sltOrderType=1",
+                    "&sltOrderType=5",
                     "&sltOrderValue=ASC",
-                    "&sltArgTypes=10",
+                    "&sltArgTypes=5",
                     "&sltArgTypeA=0&sltArgTypeB=100")
 
 
@@ -88,8 +91,8 @@ get_demographic_gusigun_data <- function(sido = "1100000000", demo_year = "2020"
 
 gusigun_demo_year_raw <- demographics::gusigun_code %>%
   filter(is.na(구시군명)) %>%
-  mutate(year = paste0(seq(2012, 2020, by =1), collapse = ",")) %>%
-  separate(year, into = paste0("x", c(2012:2020)), sep = ",") %>%
+  mutate(year = paste0(seq(2012, 2021, by =1), collapse = ",")) %>%
+  separate(year, into = paste0("x", c(2012:2021)), sep = ",") %>%
   select(-구분, -구시군명) %>%
   pivot_longer(cols = starts_with("x")) %>%
   mutate(data = map2(시도코드, value, get_demographic_gusigun_data))

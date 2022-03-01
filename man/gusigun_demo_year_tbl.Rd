@@ -26,6 +26,6 @@ gusigun_demo_year_tbl
 }
 \description{
 행정안전부 성별, 연령별 시도, 구시군별 인구현황
-2012년 ~ 2020년
+2012년 ~ 2021년
 }
 \keyword{datasets}
