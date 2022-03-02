@@ -105,12 +105,12 @@
 "election_code"
 
 #' NEC 제20대 대통령선거 유권자
-#' 18개 시도별
+#' 17개 시도별
 #'
-#' 선거ID와 선거종류코드, 선거명, 선거구등 선거에 관련된 기초코드
+#' 17개 시도별 선거인수
 #'
 #' @name voters_2022_sido_tbl
-#' @format 18개 관측점과 24개 변수를 갖는 데이터프레임
+#' @format 17개 관측점과 24개 변수를 갖는 데이터프레임
 #' \describe{
 #'   \item{결과순서}{문자형, 번호}
 #'   \item{선거_id}{문자형, 선거코드(선거일)}
@@ -120,4 +120,64 @@
 #' @export voters_2022_sido_tbl
 #' @source \url{https://www.data.go.kr/}
 "voters_2022_sido_tbl"
+
+
+#' NEC 제20대 대통령선거 유권자
+#' 250개 구시군별 유권자 현황
+#'
+#' 18개 시도 250개 구시군별 유권자 남여, 재외국민, 남녀, 거소투표
+#'
+#' @name voters_2022_gusigun_tbl
+#' @format 250개 관측점과 24개 변수를 갖는 데이터프레임
+#' \describe{
+#'   \item{결과순서}{문자형, 번호}
+#'   \item{선거_id}{문자형, 선거코드(선거일)}
+#'   \item{시도명}{문자, 시도명}
+#'   \item{구시군명}{문자, 구시군명}
+#'   \item{...}{문자, ...}
+#' }
+#' @export voters_2022_gusigun_tbl
+#' @source \url{https://www.data.go.kr/}
+"voters_2022_gusigun_tbl"
+
+
+#' NEC 제20대 대통령선거 유권자
+#' 3,510개 읍면동별 유권자 현황
+#'
+#' 18개 시도, 250개 구시군별, 3,510개 읍면동별 유권자 남여, 재외국민, 남녀, 거소투표
+#'
+#' @name voters_2022_emd_tbl
+#' @format 250개 관측점과 24개 변수를 갖는 데이터프레임
+#' \describe{
+#'   \item{결과순서}{문자형, 번호}
+#'   \item{선거_id}{문자형, 선거코드(선거일)}
+#'   \item{시도명}{문자, 시도명}
+#'   \item{구시군명}{문자, 구시군명}
+#'   \item{읍면동명}{문자, 읍면동명}
+#'   \item{...}{문자, ...}
+#' }
+#' @export voters_2022_emd_tbl
+#' @source \url{https://www.data.go.kr/}
+"voters_2022_emd_tbl"
+
+#' NEC 제20대 대통령선거 유권자
+#' 14,464개 투표소별 유권자 현황
+#'
+#' 18개 시도, 250개 구시군별, 3,510개 읍면동별,
+#' 14,464개 투표소별 유권자 남여, 재외국민, 남녀, 거소투표
+#'
+#' @name voters_2022_station_tbl
+#' @format 250개 관측점과 24개 변수를 갖는 데이터프레임
+#' \describe{
+#'   \item{결과순서}{문자형, 번호}
+#'   \item{선거_id}{문자형, 선거코드(선거일)}
+#'   \item{시도명}{문자, 시도명}
+#'   \item{구시군명}{문자, 구시군명}
+#'   \item{읍면동명}{문자, 읍면동명}
+#'   \item{투표구명}{문자, 투표구명}
+#'   \item{...}{문자, ...}
+#' }
+#' @export voters_2022_station_tbl
+#' @source \url{https://www.data.go.kr/}
+"voters_2022_station_tbl"
 
