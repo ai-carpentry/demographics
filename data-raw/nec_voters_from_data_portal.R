@@ -76,12 +76,7 @@ voters_2022_gusigun <- glue::glue("http://apis.data.go.kr/9760000/ElcntInfoInqir
                                            "&sgId=20220309",
                                            "&sdName=서울특별시",
                                            "&numOfRows=100",
-                                           "&ServiceKey={Sys.getenv('DATA_APIKEY')}")
-
-voters_2022_gusigun <- glue::glue("http://apis.data.go.kr/9760000/ElcntInfoInqireService/getGsigElcntInfoInqire?pageNo=1&numOfRows=10&resultType=json&sgId=20200415&sdName=서울특별시",
-                                  "&serviceKey={Sys.getenv('DATA_APIKEY')}")
-
-
+                                           "&serviceKey={Sys.getenv('DATA_APIKEY')}")
 
 voters_2022_gusigun_resp <- GET(voters_2022_gusigun)
 
