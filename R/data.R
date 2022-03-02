@@ -86,3 +86,38 @@
 #' @export emd_demo_year_by_ten_tbl
 #' @source \url{https://jumin.mois.go.kr/}
 "emd_demo_year_by_ten_tbl"
+
+
+#' 중앙선거관리위원회 코드정보
+#'
+#' 선거ID와 선거종류코드, 선거명, 선거구등 선거에 관련된 기초코드
+#'
+#' @name election_code
+#' @format 79개 관측점과 5개 변수를 갖는 데이터프레임
+#' \describe{
+#'   \item{num}{문자형, 번호}
+#'   \item{sg_id}{문자형, 선거코드(선거일)}
+#'   \item{sg_name}{문자, 선거명}
+#'   \item{sg_typecode}{문자, 선거종류코드}
+#' }
+#' @export election_code
+#' @source \url{https://www.data.go.kr/}
+"election_code"
+
+#' NEC 제20대 대통령선거 유권자
+#' 18개 시도별
+#'
+#' 선거ID와 선거종류코드, 선거명, 선거구등 선거에 관련된 기초코드
+#'
+#' @name voters_2022_sido_tbl
+#' @format 18개 관측점과 24개 변수를 갖는 데이터프레임
+#' \describe{
+#'   \item{결과순서}{문자형, 번호}
+#'   \item{선거_id}{문자형, 선거코드(선거일)}
+#'   \item{시도명}{문자, 시도명}
+#'   \item{...}{문자, ...}
+#' }
+#' @export voters_2022_sido_tbl
+#' @source \url{https://www.data.go.kr/}
+"voters_2022_sido_tbl"
+
