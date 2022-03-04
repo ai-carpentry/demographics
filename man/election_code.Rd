@@ -21,5 +21,6 @@ election_code
 }
 \description{
 선거ID와 선거종류코드, 선거명, 선거구등 선거에 관련된 기초코드
+OpenAPI활용가이드(코드정보)_v3.6.hwp
 }
 \keyword{datasets}
