@@ -7,8 +7,6 @@ library(httr)
 ## 데이터 정제
 library(jsonlite)
 
-demographics::election_code %>%
-  filter(str_detect(sg_name, "대통령"))
 
 # 1. 스크립트 -----------------------------------------------------------
 
