@@ -133,7 +133,8 @@ emd_demo_year_by_five <- emd_demo_year_by_five_raw %>%
   # select(-check) %>%
   filter(! str_detect(행정기관, "수원시|성남시|안양시|안산시|고양시|용인시"),
          ! str_detect(행정기관, "청주시|천안시|안양시|전주시|포항시|창원시") ) %>%
-  select(시도명, 시도코드, 구시군명, 구시군코드, 연도, 행정기관코드, 행정기관, 성별, starts_with("x"))
+  select(시도명, 시도코드, 구시군명, 구시군코드, 연도, 행정기관코드, 행정기관, 성별, starts_with("x")) %>%
+  filter(구시군명 !=행정기관)
 
 # 4. 데이터 저장 -------------
 
@@ -143,38 +144,29 @@ usethis::use_data(emd_demo_year_by_five, overwrite = TRUE)
 
 test_that("행안부 인구통계 - 성별, 연령별, 읍면동별", {
 
-  # emd_demo_summary_tbl <- emd_demo_year_by_five %>%
-  #   pivot_longer(cols = starts_with("x")) %>%
-  #   mutate(value = parse_number(value),
-  #          연도 = as.integer(연도)) %>%
-  #   filter(연도 >= 2013) %>%
-  #   group_by(시도명, 구시군명, 연도) %>%
-  #   summarise(인구수 = sum(value, na.rm = TRUE)) %>%
-  #   ungroup() %>%
-  #   mutate(연도 = as.character(연도))
-  #
-  # emd_answer_tbl <- demographics::gusigun_demo_year_tbl %>%
-  #   pivot_longer(cols = starts_with("x"), names_to = "연령", values_to = "정답_인구수",
-  #                values_transform = list(정답_인구수 = parse_number)) %>%
-  #   group_by(시도명, 구시군명 = 행정기관, 연도) %>%
-  #   summarise(정답_인구수 = sum(정답_인구수)) %>%
-  #   ungroup() %>%
-  #   filter(연도 >= 2012)
-  #
-  # check_row <- emd_answer_tbl %>%
-  #   left_join(emd_demo_summary_tbl) %>%
-  #   mutate(차이 = 정답_인구수 - 인구수) %>%
-  #   filter(차이 !=0) %>%
-  #   nrow()
-  #
-  # expect_that( check_row, equals(0))
+  data_total_tbl <- demographics::emd_demo_year_by_five %>%
+    pivot_longer(cols = starts_with("x")) %>%
+    mutate(value = parse_number(value),
+           연도 = as.integer(연도)) %>%
+    filter(연도 >= 2016, 연도 <= 2020) %>%
+    group_by(시도명, 연도) %>%
+    summarise(인구수 = sum(value, na.rm = TRUE)) %>%
+    ungroup() %>%
+    mutate(연도 = as.numeric(연도)) %>%
+    arrange(시도명, 연도) %>%
+    filter(str_detect(시도명, "세종"))
+
+  answer_total_raw <- readxl::read_excel("inst/extdata/시도_201612_202012_연령별인구현황_연간.xlsx", sheet = "연령별인구현황")
+
+  answer_total_tbl <- answer_total_raw %>%
+    pivot_longer(`2016년`:`2020년`, names_to = "연도", values_to = "인구수") %>%
+    filter(행정기관 != "전국") %>%
+    mutate(연도 = parse_number(연도),
+           인구수 = parse_number(인구수)) %>%
+    select(-행정기관코드) %>%
+    rename(시도명 = 행정기관) %>%
+    arrange(시도명, 연도) %>%
+    filter(str_detect(시도명, "세종"))
+
+  expect_identical(data_total_tbl, answer_total_tbl)
 })
-
-
-
-
-
-
-
-
-

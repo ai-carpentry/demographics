@@ -168,8 +168,25 @@ usethis::use_data(emd_demo_year_by_ten, overwrite = TRUE)
 #   group_by(시도명, 연도) %>%
 #   summarise(sum(value, na.rm = TRUE))
 #
-#
-#
-#
-#
-#
+
+
+
+emd_demo_year_by_ten <- demographics::emd_demo_year_by_ten %>%
+  filter(구시군명 !=행정기관)
+  pivot_longer(cols = starts_with("x")) %>%
+  mutate(value = parse_number(value),
+         연도 = as.integer(연도)) %>%
+  filter(연도 >= 2016, 연도 <= 2020) %>%
+  group_by(시도명, 연도) %>%
+  summarise(인구수 = sum(value, na.rm = TRUE)) %>%
+  ungroup() %>%
+  mutate(연도 = as.numeric(연도)) %>%
+  arrange(시도명, 연도) %>%
+  filter(str_detect(시도명, "경상남도"),
+         연도 == 2020)
+
+
+
+
+
+
