@@ -1,0 +1,42 @@
+
+
+# 주민등록 인구통계 마스터 시군구 코드 ------------------------------
+#' @title 시군구 마스터 코드
+#' @description 행정안전부 주민등록 인구통계 시군구 마스터 코드
+#' @format A data frame with 246 rows and 4 variables:
+#' \describe{
+#'   \item{\code{시도명}}{character 시도명}
+#'   \item{\code{시도코드}}{character 10자리 시도, 시군구 코드}
+#'   \item{\code{구분}}{character 1: 시도, 2: 시군구}
+#'   \item{\code{구시군명}}{character 시군구명}
+#'}
+#' @details DETAILS
+#' @source \url{https://jumin.mois.go.kr/}
+"sigungu_code"
+
+
+# [행정안전부] 5세 단위 시도, 구시군, 읍면동 인구통계 --------------------
+#'
+#' 행정안전부 성별, 연령별 시도, 구시군별 인구현황
+#' 2012년 ~ 2021년
+#' 연령 구분 단위: 5 세
+#'
+#' @name emd_demo_year_by_five
+#' @format 75,186개 관측점과  29개 변수를 갖는 데이터프레임
+#' \describe{
+#'   \item{시도명}{문자형, 시도명 전체 명칭}
+#'   \item{시도코드}{문자형, 숫자 10자리}
+#'   \item{구시군명}{문자형, 구시군명 전체 명칭}
+#'   \item{구시군코드}{문자형, 숫자 10자리}
+#'   \item{연도}{문자형, 숫자 4자리, 2012 ~ 2020}
+#'   \item{행정기관코드}{행정기관코드, 숫자 10 자리코드}
+#'   \item{행정기관}{문자형, 행정기관명, 구시군명}
+#'   \item{성별}{문자형, 남/여}
+#'   \item{x0_9세}{문자형, 0~9세 인구수}
+#'   \item{...}{문자형, ...세 인구수}
+#'   \item{x100세_이상}{문자형, 100세 이상 인구수}
+#' }
+#' @source \url{https://jumin.mois.go.kr/}
+"emd_demo_year_by_five"
+
+
